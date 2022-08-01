@@ -356,7 +356,9 @@ function baseStripFirmware {
     mkdir -p /lib/firmware-required
     find "${base}" \( -name "*.ko" -o -name "*.ko.xz" -o -name "*.ko.zst" -o -name "*.ko.gz" \) -print0 | \
     while IFS= read -r -d $'\0' kernel_module; do
-        firmware=$(modinfo "${kernel_module}" | grep ^firmware || :)
+        firmware=$(while read -r line; do if [[ $line =~ ^firmware ]]; then echo "$line"; fi; done < modinfo "${kernel_module}" || :)
+
+
         if [ -z "${firmware}" ];then
             continue
         fi
