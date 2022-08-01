@@ -206,7 +206,16 @@ function baseStripLocales {
 
 function baseStripTranslations {
     local keepMatching="$*"
-    find /usr/share/locale -name "*.mo" |\
+    
+    find_usr_share_locale() {
+            for f in /usr/share/locale; do
+                if [[ $f =~ \.mo$ ]]; then
+                    echo "$f"
+                fi
+            done
+        }
+
+    find_usr_share_locale |\
         grep -v "${keepMatching}" | xargs rm -f
 }
 
