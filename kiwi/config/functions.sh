@@ -788,10 +788,16 @@ function baseFixupKernelModuleDependencies {
     for kernel_dir in /kernel-tree/*;do
         echo "Checking kernel dependencies for ${kernel_dir}"
         kernel_version=$(/usr/bin/basename "${kernel_dir}")
-        module_files=$(
-            find "/kernel-tree/${kernel_version}" \
-                -name "*.ko" -o -name "*.ko.xz"
-        )
+
+        find_module_file() {
+            for f in /kernel-tree/${kernel_version}; do
+                if [[ $f =~ \.ko$ || $f =~ \.ko.xz$ ]]; then
+                    echo "$f"
+                fi
+            done
+        }
+
+        module_files=$(find_module_file)
 
         for module in ${module_files};do
             module_u=${module%.xz}
