@@ -837,10 +837,16 @@ function baseStripAndKeep {
         baseFile=$(/usr/bin/basename "${file}")
         found=0
         for keep in ${keepFiles};do
-            if echo "${baseFile}" | grep -q "${keep}"; then
-                found=1
-                break
-            fi
+            
+            while read -r line
+            do 
+                if [[ $line =~ ${keep} ]]
+                then 
+                    found=1
+                    break
+                fi
+            done < echo "${baseFile}"
+            
         done
         if [ "${found}" = 0 ]; then
              Rm -rf "${file}"
