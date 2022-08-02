@@ -363,7 +363,16 @@ function baseStripFirmware {
     local kernel_module
     local firmware
     mkdir -p /lib/firmware-required
-    find "${base}" \( -name "*.ko" -o -name "*.ko.xz" -o -name "*.ko.zst" -o -name "*.ko.gz" \) -print0 | \
+
+    find_kernel_tree() {
+            for f in "${base}"; do
+                if [[ $f =~ \.ko$ || $f =~ \.ko.xz$ || $f =~ \.ko.zst$ || $f =~ \.ko.gz$ ]]; then
+                    echo -e "$f""\0"
+                fi
+            done
+        }
+
+    find_kernel_tree | \
     while IFS= read -r -d $'\0' kernel_module; do
         firmware=$(while read -r line; do if [[ $line =~ ^firmware ]]; then echo "$line"; fi; done < modinfo "${kernel_module}" || :)
 
