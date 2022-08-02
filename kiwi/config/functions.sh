@@ -471,9 +471,17 @@ function baseStripKernelModules {
             continue
         fi
         echo "Downsizing kernel modules for ${kernel_dir}"
+
+        find_kernel_tree() {
+            for f in /kernel-tree/${kernel_version}/kernel; do
+                if [[ $f =~ \.ko$ || $f =~ \.ko.xz$ ]]; then
+                    echo "$f"
+                fi
+            done
+        }
+
         for module in $(
-            find "/kernel-tree/${kernel_version}/kernel" \
-                -name "*.ko" -o -name "*.ko.xz" | sort
+            find_kernel_tree | sort
         ); do
             if ! baseKernelDriverMatches "${module}"; then
                 echo "Deleting unwanted module: ${module}"
