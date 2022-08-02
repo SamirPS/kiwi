@@ -730,7 +730,9 @@ function baseQuoteFile {
     local file=$1
     local conf=$file.quoted
     # create clean input, no empty lines and comments
-    grep -v '^$' "${file}" | grep -v '^[ \t]*#' > "${conf}"
+    
+    
+    while read -r line; do if ! [[ $line =~ ^$ ]]; then echo "$line"; fi; done < ${file}  | grep -v '^[ \t]*#' > "${conf}"
     # remove start/stop quoting from values
     sed -E -i -e s"#(^[a-zA-Z0-9_]+)=[\"'](.*)[\"']#\1=\2#" "${conf}"
     # remove backslash quotes if any
